@@ -1,5 +1,3 @@
-Edit with docker
-
 name: Python test and build
 
 on: [push]
