@@ -26,6 +26,23 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-labs:latest
   
+
+  sonarqube:
+    needs: test
+    if: true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          # Disabling shallow clones is recommended for improving the relevancy of reporting
+          fetch-depth: 0
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_URL }}    
+
+
   dast:
     needs: [test, sonarqube]
     runs-on: ubuntu-latest
@@ -91,21 +108,8 @@ jobs:
           name: zap-report
           path: report_json.json
 
-          
-  sonarqube:
-    needs: test
-    if: true
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          # Disabling shallow clones is recommended for improving the relevancy of reporting
-          fetch-depth: 0
-      - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@master
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_URL }}       
+
+   
              
   test:
     runs-on: ubuntu-latest
@@ -130,6 +134,7 @@ jobs:
           name: test-results
           path: junit/test-results.xml
 
+          
   submit_results:
     needs: [build]
     if: true
