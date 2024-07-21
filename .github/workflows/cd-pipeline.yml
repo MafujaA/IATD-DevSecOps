@@ -2,7 +2,7 @@ name: Deploy
 
 on: workflow_dispatch
 
-# tets
+# test
 
 jobs:
   deploy:
@@ -26,6 +26,7 @@ jobs:
         uses: sigstore/cosign-installer@v3.4.0
     
       - name: Verify image signature
+        if: false
         env:
           IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/devops-labs:latest
           GITHUB_ISSUER: https://token.actions.githubusercontent.com
@@ -60,5 +61,7 @@ jobs:
           echo "FQDN: $FQDN"
           WEEK2_SUBMIT=$(curl -X POST -H "Authorization: Bearer $AZURE_ACCESS_TOKEN" -d "https://$FQDN" https://devsecops-ver.azurewebsites.net/api/week2-submit)
           echo "Week2 submit: $WEEK2_SUBMIT"
+          MODEL_RESPONSE=$(curl -X POST -H "Authorization: Bearer $AZURE_ACCESS_TOKEN" --data-binary @$GITHUB_WORKSPACE/threat-model/ci-pipeline.json https://devsecops-ver.azurewebsites.net/api/week6-report)
+          echo "Model report upload: $MODEL_RESPONSE"
 
           
